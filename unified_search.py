@@ -1011,7 +1011,7 @@ def cmd_pdf(args: list[str], state: dict):
     if pdf_url != initial_url:
         console.print(f"  Resolved PDF: [green]{pdf_url}[/green]")
 
-    download_dir = os.path.expanduser("~/tmp/papers")
+    download_dir = os.path.expanduser("~/pdf")
     os.makedirs(download_dir, exist_ok=True)
 
     safe_id  = (paper.get("arxiv_id") or paper.get("s2_id") or "paper").replace("/", "_")
