@@ -51,13 +51,19 @@ def fetch_pool(query: str, filters: dict, pool_size: int) -> list[dict]:
     if not pmids:
         return []
 
-    resp = _get(f"{EUTILS_BASE}/efetch.fcgi", {
-        "db":      "pubmed",
-        "id":      ",".join(pmids),
-        "rettype": "abstract",
-        "retmode": "xml",
-    })
-    return _parse_xml(resp.text)
+    # efetch in chunks of 200 to avoid overloading the API
+    papers = []
+    chunk_size = 200
+    for i in range(0, len(pmids), chunk_size):
+        chunk = pmids[i : i + chunk_size]
+        resp  = _get(f"{EUTILS_BASE}/efetch.fcgi", {
+            "db":      "pubmed",
+            "id":      ",".join(chunk),
+            "rettype": "abstract",
+            "retmode": "xml",
+        })
+        papers.extend(_parse_xml(resp.text))
+    return papers
 
 
 def _parse_xml(xml_text: str) -> list[dict]:
